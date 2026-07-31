@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mfumo wa Mchanganuo wa Mapato na Matumizi</title>
+    <!-- Faili la Mtindo (CSS) -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome kwa ajili ya Icon za Menyu -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js kwa ajili ya Grafu -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf kwa ajili ya Kupakua PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- MENU YA KUSHOTO (SIDEBAR) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-wallet logo-icon"></i>
+                <h2>Financial App</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active" onclick="switchSection('dashboard', this)">
+                    <i class="fa-solid fa-house"></i> <span>Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('income', this)">
+                    <i class="fa-solid fa-coins"></i> <span>Mapato</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('expenses', this)">
+                    <i class="fa-solid fa-money-bill-transfer"></i> <span>Matumizi</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('monthly-reports', this)">
+                    <i class="fa-solid fa-chart-pie"></i> <span>Ripoti za Mwezi</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('yearly-reports', this)">
+                    <i class="fa-solid fa-chart-column"></i> <span>Ripoti za Mwaka</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('pdf-reports', this)">
+                    <i class="fa-solid fa-file-pdf"></i> <span>PDF Reports</span>
+                </li>
+                <li class="nav-item" onclick="switchSection('settings', this)">
+                    <i class="fa-solid fa-gear"></i> <span>Settings</span>
+                </li>
+                <li class="nav-item logout" onclick="alert('Umetoka kwenye mfumo!')">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Ondoka</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ENEO LA MAUDHUI YA NDANI (MAIN CONTENT) -->
+        <main class="main-content">
+            
+            <!-- HEADER YA JUU -->
+            <header class="top-header">
+                <h1 id="page-title">Dashboard Overview</h1>
+                <div class="user-profile">
+                    <span id="header-biz-name">Taasisi Yangu</span>
+                </div>
+            </header>
+
+            <!-- 1. DASHBOARD SECTION -->
+            <section id="dashboard" class="content-section active">
+                <div class="cards-grid">
+                    <div class="card card-income">
+                        <div class="card-info">
+                            <p>Jumla ya Mapato</p>
+                            <h3 id="dash-income">TZS 0</h3>
+                        </div>
+                        <i class="fa-solid fa-arrow-down-long card-icon"></i>
+                    </div>
+                    <div class="card card-expense">
+                        <div class="card-info">
+                            <p>Jumla ya Matumizi</p>
+                            <h3 id="dash-expense">TZS 0</h3>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-long card-icon"></i>
+                    </div>
+                    <div class="card card-balance">
+                        <div class="card-info">
+                            <p>Salio</p>
+                            <h3 id="dash-balance">TZS 0</h3>
+                        </div>
+                        <i class="fa-solid fa-scale-balanced card-icon"></i>
+                    </div>
+                    <div class="card card-ratio">
+                        <div class="card-info">
+                            <p>Asilimia ya Matumizi</p>
+                            <h3 id="dash-ratio">0%</h3>
+                        </div>
+                        <i class="fa-solid fa-percent card-icon"></i>
+                    </div>
+                    <div class="card card-month">
+                        <div class="card-info">
+                            <p>Mwezi wa Sasa</p>
+                            <h3 id="dash-month">Mwezi Huu</h3>
+                        </div>
+                        <i class="fa-solid fa-calendar-days card-icon"></i>
+                    </div>
+                </div>
+
+                <!-- SEHEMU YA GRAFU -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>Mapato vs Matumizi</h3>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Mchanganuo wa Matumizi (Pie)</h3>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- JEDWALI LA MIAMALA YA HIVI KARIBUNI -->
+                <div class="table-container">
+                    <h3>Miamala ya Hivi Karibuni</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tarehe</th>
+                                <th>Aina</th>
+                                <th>Kundi/Chanzo</th>
+                                <th>Kiasi (TZS)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions-list">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Hakuna miamala iliyowekwa bado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 2. UKURASA WA MAPATO -->
+            <section id="income" class="content-section">
+                <div class="form-container">
+                    <h3>Sajili Mapato Mapya</h3>
+                    <form id="income-form">
+                        <div class="form-group">
+                            <label>Tarehe</label>
+                            <input type="date" id="inc-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Chanzo cha Mapato</label>
+                            <input type="text" id="inc-source" placeholder="mf. Ada, Mauzo, Msaada" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kiasi (TZS)</label>
+                            <input type="number" id="inc-amount" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Maelezo</label>
+                            <input type="text" id="inc-desc" placeholder="Maelezo ya ziada">
+                        </div>
+                        <button type="submit" class="btn btn-success">Hifadhi Mapato</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Orodha ya Mapato Yote</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tarehe</th>
+                                <th>Chanzo</th>
+                                <th>Kiasi (TZS)</th>
+                                <th>Maelezo</th>
+                                <th>Kitendo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data itaingia kwa JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. UKURASA WA MATUMIZI -->
+            <section id="expenses" class="content-section">
+                <div class="form-container">
+                    <h3>Sajili Matumizi Mapya</h3>
+                    <form id="expense-form">
+                        <div class="form-group">
+                            <label>Tarehe</label>
+                            <input type="date" id="exp-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Kundi la Matumizi</label>
+                            <select id="exp-category" required>
+                                <option value="">Chagua Kundi...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kiasi (TZS)</label>
+                            <input type="number" id="exp-amount" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Maelezo</label>
+                            <input type="text" id="exp-desc" placeholder="Maelezo ya ziada">
+                        </div>
+                        <button type="submit" class="btn btn-danger">Hifadhi Matumizi</button>
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <h3>Orodha ya Matumizi Yote</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tarehe</th>
+                                <th>Kundi</th>
+                                <th>Kiasi (TZS)</th>
+                                <th>Maelezo</th>
+                                <th>Kitendo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data itaingia kwa JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. RIPOTI ZA MWEZI -->
+            <section id="monthly-reports" class="content-section">
+                <div class="filter-box">
+                    <label>Chagua Mwezi na Mwaka:</label>
+                    <input type="month" id="report-month-picker" onchange="generateMonthlyReport()">
+                    <button class="btn btn-primary" onclick="generateMonthlyReport()"><i class="fa-solid fa-filter"></i> Onyesha Ripoti</button>
+                    <button class="btn btn-secondary" onclick="printReportPDF('monthly-reports', 'Ripoti_ya_Mwezi')"><i class="fa-solid fa-print"></i> Print PDF</button>
+                </div>
+
+                <div class="report-summary-cards">
+                    <div class="mini-card">Mapato: <strong id="monthly-total-income">TZS 0</strong></div>
+                    <div class="mini-card">Matumizi: <strong id="monthly-total-expense">TZS 0</strong></div>
+                    <div class="mini-card">Salio: <strong id="monthly-balance">TZS 0</strong></div>
+                </div>
+
+                <div class="table-container" id="monthly-report-table">
+                    <h3>Mchanganuo wa Asilimia za Matumizi kwa Kundi</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kundi la Matumizi</th>
+                                <th>Jumla ya Gharama (TZS)</th>
+                                <th>Asilimia (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data ya Asilimia -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. RIPOTI ZA MWAKA -->
+            <section id="yearly-reports" class="content-section">
+                <div class="filter-box">
+                    <label>Mwaka wa Fedha:</label>
+                    <select id="report-year-picker" onchange="generateYearlyReport()">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="generateYearlyReport()">Changanua</button>
+                    <button class="btn btn-secondary" onclick="printReportPDF('yearly-reports', 'Ripoti_ya_Mwaka')"><i class="fa-solid fa-file-arrow-down"></i> Download PDF</button>
+                </div>
+
+                <div class="table-container" id="yearly-report-table">
+                    <h3>Muhtasari wa Miezi Yote</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mwezi</th>
+                                <th>Mapato (TZS)</th>
+                                <th>Matumizi (TZS)</th>
+                                <th>Salio (TZS)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Miezi 12 itaingia hapa -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>JUMLA YA MWAKA</th>
+                                <th id="yearly-grand-income">TZS 0</th>
+                                <th id="yearly-grand-expense">TZS 0</th>
+                                <th id="yearly-grand-balance">TZS 0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 6. PDF REPORTS -->
+            <section id="pdf-reports" class="content-section">
+                <div class="card">
+                    <h3>Pakua Ripoti Zote</h3>
+                    <p style="margin-top: 10px; color: #666;">Hapa unaweza kuchagua na kudownload ripoti rasmi kwa umbizo la PDF kwa ajili ya ukaguzi au kumbukumbu.</p>
+                    <div style="margin-top: 20px; display: flex; gap: 15px;">
+                        <button class="btn btn-primary" onclick="printReportPDF('monthly-reports', 'Ripoti_ya_Mwezi')"><i class="fa-solid fa-download"></i> Ripoti ya Mwezi Huu (PDF)</button>
+                        <button class="btn btn-success" onclick="printReportPDF('yearly-reports', 'Ripoti_ya_Mwaka')"><i class="fa-solid fa-download"></i> Ripoti ya Mwaka (PDF)</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. SETTINGS -->
+            <section id="settings" class="content-section">
+                <div class="form-container">
+                    <h3>Mipangilio ya Mfumo</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label>Jina la Biashara / Taasisi</label>
+                            <input type="text" id="set-biz-name" placeholder="Ingiza jina...">
+                        </div>
+                        <div class="form-group">
+                            <label>Mwaka wa Fedha wa Sasa</label>
+                            <input type="number" id="set-fiscal-year" value="2026">
+                        </div>
+                        <div class="form-group">
+                            <label>Ongeza Aina Mpya ya Matumizi</label>
+                            <input type="text" id="set-new-category" placeholder="mf. Kodi, Umeme, Maji">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Hifadhi Mipangilio</button>
+                        <button type="button" class="btn btn-secondary" onclick="backupData()">Backup Data</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Faili Kuu la JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
+
