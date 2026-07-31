@@ -9,7 +9,7 @@ let appData = JSON.parse(localStorage.getItem('mPEP_financial_data')) || {
     expenses: []
 };
 
-// GLOBAL CHART INSTANCES
+// GLOBAL CHARTS
 let barChartInstance = null;
 let pieChartInstance = null;
 
@@ -26,7 +26,6 @@ function initApp() {
     initCharts();
     setupFormListeners();
     
-    // Set default date picker values
     const now = new Date();
     const currentMonth = now.toISOString().slice(0, 7);
     const monthPicker = document.getElementById('report-month-picker');
@@ -37,23 +36,25 @@ function saveData() {
     localStorage.setItem('mPEP_financial_data', JSON.stringify(appData));
 }
 
-// TOGGLE BETWEEN MANUAL AND FILE INPUT FOR EXPENSES
+// TOGGLE EXPENSE INPUT MODES
 function toggleExpenseInput(mode) {
     const manualBox = document.getElementById('expense-manual-box');
     const fileBox = document.getElementById('expense-file-box');
     const btnManual = document.getElementById('btn-manual-tab');
     const btnFile = document.getElementById('btn-file-tab');
 
+    if (!manualBox || !fileBox) return;
+
     if (mode === 'manual') {
         manualBox.style.display = 'block';
         fileBox.style.display = 'none';
-        btnManual.className = 'btn btn-primary';
-        btnFile.className = 'btn btn-secondary';
-    } else {
+        btnManual.classList.add('active');
+        btnFile.classList.remove('active');
+    } else if (mode === 'file') {
         manualBox.style.display = 'none';
         fileBox.style.display = 'block';
-        btnManual.className = 'btn btn-secondary';
-        btnFile.className = 'btn btn-primary';
+        btnFile.classList.add('active');
+        btnManual.classList.remove('active');
     }
 }
 
@@ -75,7 +76,6 @@ function processExpenseFile() {
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
             
-            // Format to JSON
             const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
             if (jsonRows.length === 0) {
@@ -86,22 +86,20 @@ function processExpenseFile() {
             let addedCount = 0;
 
             jsonRows.forEach(row => {
-                // Tafuta tarehe, kundi, kiasi, maelezo bila kujali herufi kubwa au ndogo
                 const date = row['Tarehe'] || row['tarehe'] || row['Date'] || row['date'] || new Date().toISOString().slice(0, 10);
                 const category = row['Kundi'] || row['kundi'] || row['Category'] || row['category'] || 'Mengineyo';
                 const amount = parseFloat(row['Kiasi'] || row['kiasi'] || row['Amount'] || row['amount'] || 0);
-                const desc = row['Maelezo'] || row['maelezo'] || row['Description'] || row['desc'] || 'Yaliyopakizwa kutoka kwenye faili';
+                const desc = row['Maelezo'] || row['maelezo'] || row['Description'] || row['desc'] || 'Kutoka faili';
 
                 if (amount > 0) {
                     appData.expenses.push({
-                        id: Date.now() + Math.floor(Math.random() * 1000),
+                        id: Date.now() + Math.floor(Math.random() * 10000),
                         date: String(date),
                         category: String(category),
                         amount: amount,
                         desc: String(desc)
                     });
 
-                    // Ongeza kundi jipya iwapo halipo kwenye Mipangilio
                     if (!appData.settings.categories.includes(category) && category !== 'Mengineyo') {
                         appData.settings.categories.push(category);
                     }
@@ -127,7 +125,7 @@ function processExpenseFile() {
     reader.readAsArrayBuffer(file);
 }
 
-// NAVIGATION BETWEEN SECTIONS
+// NAVIGATION
 function switchSection(sectionId, element) {
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -178,7 +176,6 @@ function updateBizHeader() {
 
 // FORM LISTENERS
 function setupFormListeners() {
-    // Income Form
     const incForm = document.getElementById('income-form');
     if (incForm) {
         incForm.addEventListener('submit', (e) => {
@@ -197,7 +194,6 @@ function setupFormListeners() {
         });
     }
 
-    // Expense Form
     const expForm = document.getElementById('expense-form');
     if (expForm) {
         expForm.addEventListener('submit', (e) => {
@@ -216,7 +212,6 @@ function setupFormListeners() {
         });
     }
 
-    // Settings Form
     const setForm = document.getElementById('settings-form');
     if (setForm) {
         setForm.addEventListener('submit', (e) => {
@@ -240,7 +235,6 @@ function setupFormListeners() {
 
 // RENDER TABLES
 function renderAllTables() {
-    // Render Incomes
     const incTableBody = document.querySelector('#income table tbody');
     if (incTableBody) {
         incTableBody.innerHTML = appData.incomes.length === 0 ? 
@@ -256,7 +250,6 @@ function renderAllTables() {
             `).join('');
     }
 
-    // Render Expenses
     const expTableBody = document.querySelector('#expenses table tbody');
     if (expTableBody) {
         expTableBody.innerHTML = appData.expenses.length === 0 ? 
@@ -282,7 +275,7 @@ function deleteTransaction(type, id) {
     }
 }
 
-// DASHBOARD UPDATES
+// DASHBOARD
 function updateDashboard() {
     const totalIncome = appData.incomes.reduce((sum, i) => sum + i.amount, 0);
     const totalExpense = appData.expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -294,7 +287,6 @@ function updateDashboard() {
     document.getElementById('dash-balance').innerText = `TZS ${balance.toLocaleString()}`;
     document.getElementById('dash-ratio').innerText = `${ratio}%`;
 
-    // Render Recent Transactions
     const recentList = document.getElementById('recent-transactions-list');
     if (recentList) {
         const combined = [
@@ -317,7 +309,7 @@ function updateDashboard() {
     updateCharts(totalIncome, totalExpense);
 }
 
-// CHARTS LOGIC
+// CHARTS
 function initCharts() {
     const ctxBar = document.getElementById('barChart');
     const ctxPie = document.getElementById('pieChart');
@@ -370,7 +362,7 @@ function updateCharts(income, expense) {
     }
 }
 
-// MONTHLY REPORT
+// REPORTS
 function generateMonthlyReport() {
     const selectedMonth = document.getElementById('report-month-picker').value;
     if (!selectedMonth) return;
@@ -407,7 +399,6 @@ function generateMonthlyReport() {
     }
 }
 
-// YEARLY REPORT
 function generateYearlyReport() {
     const selectedYear = document.getElementById('report-year-picker').value;
     const months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -442,7 +433,6 @@ function generateYearlyReport() {
     }
 }
 
-// PRINT / DOWNLOAD PDF
 function printReportPDF(elementId, filename) {
     const element = document.getElementById(elementId);
     if (!element) return;
