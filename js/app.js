@@ -37,6 +37,96 @@ function saveData() {
     localStorage.setItem('mPEP_financial_data', JSON.stringify(appData));
 }
 
+// TOGGLE BETWEEN MANUAL AND FILE INPUT FOR EXPENSES
+function toggleExpenseInput(mode) {
+    const manualBox = document.getElementById('expense-manual-box');
+    const fileBox = document.getElementById('expense-file-box');
+    const btnManual = document.getElementById('btn-manual-tab');
+    const btnFile = document.getElementById('btn-file-tab');
+
+    if (mode === 'manual') {
+        manualBox.style.display = 'block';
+        fileBox.style.display = 'none';
+        btnManual.className = 'btn btn-primary';
+        btnFile.className = 'btn btn-secondary';
+    } else {
+        manualBox.style.display = 'none';
+        fileBox.style.display = 'block';
+        btnManual.className = 'btn btn-secondary';
+        btnFile.className = 'btn btn-primary';
+    }
+}
+
+// PROCESS EXCEL / CSV FILE FOR EXPENSES
+function processExpenseFile() {
+    const fileInput = document.getElementById('exp-file-input');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Tafadhali chagua faili kwanza!');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            // Format to JSON
+            const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+            if (jsonRows.length === 0) {
+                alert('Faili halina taarifa zozote!');
+                return;
+            }
+
+            let addedCount = 0;
+
+            jsonRows.forEach(row => {
+                // Tafuta tarehe, kundi, kiasi, maelezo bila kujali herufi kubwa au ndogo
+                const date = row['Tarehe'] || row['tarehe'] || row['Date'] || row['date'] || new Date().toISOString().slice(0, 10);
+                const category = row['Kundi'] || row['kundi'] || row['Category'] || row['category'] || 'Mengineyo';
+                const amount = parseFloat(row['Kiasi'] || row['kiasi'] || row['Amount'] || row['amount'] || 0);
+                const desc = row['Maelezo'] || row['maelezo'] || row['Description'] || row['desc'] || 'Yaliyopakizwa kutoka kwenye faili';
+
+                if (amount > 0) {
+                    appData.expenses.push({
+                        id: Date.now() + Math.floor(Math.random() * 1000),
+                        date: String(date),
+                        category: String(category),
+                        amount: amount,
+                        desc: String(desc)
+                    });
+
+                    // Ongeza kundi jipya iwapo halipo kwenye Mipangilio
+                    if (!appData.settings.categories.includes(category) && category !== 'Mengineyo') {
+                        appData.settings.categories.push(category);
+                    }
+
+                    addedCount++;
+                }
+            });
+
+            saveData();
+            populateCategories();
+            renderAllTables();
+            updateDashboard();
+            fileInput.value = '';
+
+            alert(`Umefanikiwa kuingiza kumbukumbu ${addedCount} za matumizi!`);
+
+        } catch (err) {
+            alert('Imefeli kusoma faili! Hakikisha umechagua faili sahihi la Excel au CSV.');
+            console.error(err);
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+}
+
 // NAVIGATION BETWEEN SECTIONS
 function switchSection(sectionId, element) {
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
@@ -46,7 +136,6 @@ function switchSection(sectionId, element) {
     if (targetSection) targetSection.classList.add('active');
     if (element) element.classList.add('active');
 
-    // Title update
     const titleMap = {
         'dashboard': 'Dashboard Overview',
         'income': 'Usimamizi wa Mapato',
@@ -291,13 +380,11 @@ function generateMonthlyReport() {
 
     const totalInc = filteredIncomes.reduce((sum, i) => sum + i.amount, 0);
     const totalExp = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const balance = totalInc - totalExp;
 
     document.getElementById('monthly-total-income').innerText = `TZS ${totalInc.toLocaleString()}`;
     document.getElementById('monthly-total-expense').innerText = `TZS ${totalExp.toLocaleString()}`;
-    document.getElementById('monthly-balance').innerText = `TZS ${balance.toLocaleString()}`;
+    document.getElementById('monthly-balance').innerText = `TZS ${(totalInc - totalExp).toLocaleString()}`;
 
-    // Table Percentage Breakdown
     const catTotals = {};
     filteredExpenses.forEach(exp => {
         catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount;
@@ -380,4 +467,3 @@ function backupData() {
     downloadAnchor.click();
     downloadAnchor.remove();
 }
-
