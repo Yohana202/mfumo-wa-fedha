@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- html2pdf kwa ajili ya Kupakua PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- XLSX library kwa ajili ya kusoma Excel/CSV Files -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -178,10 +180,21 @@
                 </div>
             </section>
 
-            <!-- 3. UKURASA WA MATUMIZI -->
+            <!-- 3. UKURASA WA MATUMIZI (SASA UNA OPTIONS MBILI) -->
             <section id="expenses" class="content-section">
-                <div class="form-container">
-                    <h3>Sajili Matumizi Mapya</h3>
+                <!-- TAB BUTTONS KUCHAGUA NJIA YA KUINGIZA DATA -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="btn-manual-tab" onclick="toggleExpenseInput('manual')">
+                        <i class="fa-solid fa-keyboard"></i> Kujaza Moja kwa Moja
+                    </button>
+                    <button class="btn btn-secondary" id="btn-file-tab" onclick="toggleExpenseInput('file')">
+                        <i class="fa-solid fa-file-excel"></i> Pakia Faili (Excel/CSV)
+                    </button>
+                </div>
+
+                <!-- FORM 1: KUJAZA MOJA KWA MOJA -->
+                <div class="form-container" id="expense-manual-box">
+                    <h3>Sajili Matumizi Mapya (Moja kwa Moja)</h3>
                     <form id="expense-form">
                         <div class="form-group">
                             <label>Tarehe</label>
@@ -203,6 +216,22 @@
                         </div>
                         <button type="submit" class="btn btn-danger">Hifadhi Matumizi</button>
                     </form>
+                </div>
+
+                <!-- FORM 2: PAKIA FAILI LA EXCEL / CSV -->
+                <div class="form-container" id="expense-file-box" style="display: none;">
+                    <h3>Pakia Faili la Matumizi (Excel au CSV)</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                        Hakikisha faili lako lina safu (*columns*) hizi kwenye mstari wa kwanza: 
+                        <strong>Tarehe</strong>, <strong>Kundi</strong>, <strong>Kiasi</strong>, na <strong>Maelezo</strong>.
+                    </p>
+                    <div class="form-group">
+                        <label>Chagua Faili (.xlsx, .xls, au .csv)</label>
+                        <input type="file" id="exp-file-input" accept=".xlsx, .xls, .csv">
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="processExpenseFile()">
+                        <i class="fa-solid fa-upload"></i> Ingiza Data Kutoka Kwenye Faili
+                    </button>
                 </div>
 
                 <div class="table-container">
@@ -336,4 +365,3 @@
     <script src="js/app.js"></script>
 </body>
 </html>
-
