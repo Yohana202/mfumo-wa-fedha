@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mfumo wa Mchanganuo wa Mapato na Matumizi</title>
-    <!-- Faili la Mtindo (CSS) -->
+    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- Font Awesome kwa ajili ya Icon za Menyu -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js kwa ajili ya Grafu -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2pdf kwa ajili ya Kupakua PDF -->
+    <!-- html2pdf -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- XLSX library kwa ajili ya kusoma Excel/CSV Files -->
+    <!-- XLSX library kwa Excel/CSV -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- MENU YA KUSHOTO (SIDEBAR) -->
+        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <i class="fa-solid fa-wallet logo-icon"></i>
@@ -52,10 +52,8 @@
             </ul>
         </aside>
 
-        <!-- ENEO LA MAUDHUI YA NDANI (MAIN CONTENT) -->
+        <!-- MAIN CONTENT -->
         <main class="main-content">
-            
-            <!-- HEADER YA JUU -->
             <header class="top-header">
                 <h1 id="page-title">Dashboard Overview</h1>
                 <div class="user-profile">
@@ -63,7 +61,7 @@
                 </div>
             </header>
 
-            <!-- 1. DASHBOARD SECTION -->
+            <!-- 1. DASHBOARD -->
             <section id="dashboard" class="content-section active">
                 <div class="cards-grid">
                     <div class="card card-income">
@@ -103,7 +101,6 @@
                     </div>
                 </div>
 
-                <!-- SEHEMU YA GRAFU -->
                 <div class="charts-grid">
                     <div class="chart-card">
                         <h3>Mapato vs Matumizi</h3>
@@ -115,7 +112,6 @@
                     </div>
                 </div>
 
-                <!-- JEDWALI LA MIAMALA YA HIVI KARIBUNI -->
                 <div class="table-container">
                     <h3>Miamala ya Hivi Karibuni</h3>
                     <table>
@@ -136,7 +132,7 @@
                 </div>
             </section>
 
-            <!-- 2. UKURASA WA MAPATO -->
+            <!-- 2. MAPATO -->
             <section id="income" class="content-section">
                 <div class="form-container">
                     <h3>Sajili Mapato Mapya</h3>
@@ -173,21 +169,19 @@
                                 <th>Kitendo</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Data itaingia kwa JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- 3. UKURASA WA MATUMIZI (SASA UNA OPTIONS MBILI) -->
+            <!-- 3. MATUMIZI -->
             <section id="expenses" class="content-section">
-                <!-- TAB BUTTONS KUCHAGUA NJIA YA KUINGIZA DATA -->
-                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                    <button class="btn btn-primary" id="btn-manual-tab" onclick="toggleExpenseInput('manual')">
+                <!-- TOGGLE BUTTONS -->
+                <div class="tab-button-group">
+                    <button type="button" class="btn tab-btn active" id="btn-manual-tab" onclick="toggleExpenseInput('manual')">
                         <i class="fa-solid fa-keyboard"></i> Kujaza Moja kwa Moja
                     </button>
-                    <button class="btn btn-secondary" id="btn-file-tab" onclick="toggleExpenseInput('file')">
+                    <button type="button" class="btn tab-btn" id="btn-file-tab" onclick="toggleExpenseInput('file')">
                         <i class="fa-solid fa-file-excel"></i> Pakia Faili (Excel/CSV)
                     </button>
                 </div>
@@ -218,11 +212,11 @@
                     </form>
                 </div>
 
-                <!-- FORM 2: PAKIA FAILI LA EXCEL / CSV -->
+                <!-- FORM 2: PAKIA FAILI -->
                 <div class="form-container" id="expense-file-box" style="display: none;">
                     <h3>Pakia Faili la Matumizi (Excel au CSV)</h3>
                     <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
-                        Hakikisha faili lako lina safu (*columns*) hizi kwenye mstari wa kwanza: 
+                        Hakikisha faili lako lina safu hizi: 
                         <strong>Tarehe</strong>, <strong>Kundi</strong>, <strong>Kiasi</strong>, na <strong>Maelezo</strong>.
                     </p>
                     <div class="form-group">
@@ -246,9 +240,7 @@
                                 <th>Kitendo</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Data itaingia kwa JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </section>
@@ -278,9 +270,7 @@
                                 <th>Asilimia (%)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Data ya Asilimia -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </section>
@@ -308,9 +298,7 @@
                                 <th>Salio (TZS)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Miezi 12 itaingia hapa -->
-                        </tbody>
+                        <tbody></tbody>
                         <tfoot>
                             <tr>
                                 <th>JUMLA YA MWAKA</th>
@@ -328,7 +316,7 @@
                 <div class="card">
                     <h3>Pakua Ripoti Zote</h3>
                     <p style="margin-top: 10px; color: #666;">Hapa unaweza kuchagua na kudownload ripoti rasmi kwa umbizo la PDF kwa ajili ya ukaguzi au kumbukumbu.</p>
-                    <div style="margin-top: 20px; display: flex; gap: 15px;">
+                    <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="printReportPDF('monthly-reports', 'Ripoti_ya_Mwezi')"><i class="fa-solid fa-download"></i> Ripoti ya Mwezi Huu (PDF)</button>
                         <button class="btn btn-success" onclick="printReportPDF('yearly-reports', 'Ripoti_ya_Mwaka')"><i class="fa-solid fa-download"></i> Ripoti ya Mwaka (PDF)</button>
                     </div>
@@ -361,7 +349,7 @@
         </main>
     </div>
 
-    <!-- Faili Kuu la JavaScript -->
+    <!-- JS -->
     <script src="js/app.js"></script>
 </body>
 </html>
