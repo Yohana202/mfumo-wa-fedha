@@ -3,7 +3,7 @@ let appData = JSON.parse(localStorage.getItem('mPEP_financial_data')) || {
     settings: {
         bizName: 'Taasisi Yangu',
         fiscalYear: 2026,
-        categories: ['Mishahara', 'Chakula', 'Nauli', 'Vifaa vya Ofisi', 'Matengenezo', 'Gharama za Mtandao/Simu', 'Kodi']
+        categories: ['Mishahara', 'Chakula', 'Nauli', 'Dharula', 'Matumizi ya nyumbani', 'Gharama za Mtandao/Simu', 'Kulipa madeni']
     },
     incomes: [],
     expenses: []
