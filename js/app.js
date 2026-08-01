@@ -21,6 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
 function initApp() {
     updateBizHeader();
     populateCategories();
+    function initApp() {
+    updateBizHeader();
+    populateCategories();
+    
+    // AUTO-UPDATE OLD CATEGORIES TO NEW NAMES
+    if (appData && appData.expenses) {
+        appData.expenses.forEach(exp => {
+            if (exp.category === 'Matengenezo') exp.category = 'Matumizi ya Nyumbani';
+            if (exp.category === 'Kodi') exp.category = 'Kulipa Madeni';
+            if (exp.category === 'Vifaa vya Ofisi') exp.category = 'Dharula';
+        });
+        localStorage.setItem('mPEP_financial_data', JSON.stringify(appData));
+    }
+
+    renderAllTables();
+    updateDashboard();
+    initCharts();
+    setupFormListeners();
+
     renderAllTables();
     updateDashboard();
     initCharts();
